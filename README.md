@@ -9,7 +9,7 @@
     - Total games owned
         - Total games played
         - Total games unplayed
-    -Total hours played
+    - Total hours played
         - Total hours played per hour ranges
 
 ## What you will need
