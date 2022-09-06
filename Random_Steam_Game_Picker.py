@@ -1,5 +1,6 @@
 ##################################################################################################################################################################
 ### Importing Modules ###
+from datetime import datetime
 from distutils.command.config import config
 from genericpath import exists
 from msilib.schema import Directory
@@ -40,6 +41,9 @@ directory_path_config = directory_path + "config.json"
 directory_path_games = directory_path + "purged_games.json"
 directory_path_stats = directory_path + "player_stats.txt"
 directory_path_purge = directory_path + "purge_list.txt"
+directory_path_unplayed_games = directory_path + "purged_unplayed_games.json"
+directory_path_played_games = directory_path + "purged_played_games.json"
+
 ##################################################################################################################################################################
 ### Getting ID from vanity name ###
 def GetID(vanity_url, api_key):
@@ -244,18 +248,44 @@ if not exists(directory_path_purge):
 if not exists(directory_path_stats):
     new_file = open(directory_path_stats, "x")
     new_file.close()
+if not exists(directory_path_unplayed_games):
+    new_file = open(directory_path_unplayed_games, "x")
+    new_file.close()
+if not exists(directory_path_played_games):
+    new_file = open(directory_path_played_games, "x")
+    new_file.close()
 ##################################################################################################################################################################
 ### Starting user experience by calling the First Choice ###
 Game_List = First_Choice(Game_List)
 ##################################################################################################################################################################
+def Save_games(played_games, unplayed_games):
+    ### Saving Unplayed Game Results ###
+    with open(directory_path_unplayed_games, "w") as outputfile:
+        json.dump(
+            unplayed_games, outputfile, sort_keys=False, indent=4
+        )  # Format and write JSON to file
+    ### Saving Played Game Results ###
+    with open(directory_path_played_games, "w") as outputfile:
+        json.dump(
+            played_games, outputfile, sort_keys=False, indent=4
+        )  # Format and write JSON to file
+
+
+##################################################################################################################################################################
 def Remove_Played_Games(games):
     unplayed_games = {}  # New dictionary for unplayed games
+    played_games = {}  # New dictionary for played games
     for x in Game_List:  # Checking every game in the game list
         play_time = Game_List.get(x)  # Get time value
-        if play_time == 0:
+        if play_time == 0:  # If the game hasn't been played
             unplayed_games[
                 x
             ] = play_time  # Adding games with no playtime to the dictionary
+        else:  # If the game has been played
+            played_games[x] = play_time  # Adding games with playtime to the dictionary
+    Save_games(
+        played_games, unplayed_games
+    )  # Saving the games separately because I feel like it
     return unplayed_games  # Returning the unplayed games
 
 
@@ -269,7 +299,7 @@ def Second_Choice(games):
     )
     User_Decision = int(User_Choice)
     if User_Decision == 1:
-        get_games = Remove_Played_Games(get_games)  # Removing unplayed games
+        get_games = Remove_Played_Games(get_games)  # Removing played games
     elif User_Decision == 2:
         get_games = Game_List  # Passthrough all games
     else:
@@ -368,11 +398,15 @@ def Get_Game_Stats(games):
     Total_Hours = round(Total_Hours, 2)  # Rounding total hours
     steam_name = ""
     steam_name = GetProfile(steam_name)  # Getting steam name
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output = (
         "Username: "
         + str(steam_name)
         + "\nId: "
         + str(steamid)
+        + "\n------------------------"
+        + "\nTime: "
+        + str(current_time)
         + "\n------------------------"
         + "\nTotal Hours: "
         + str(Total_Hours)
