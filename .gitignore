@@ -7,6 +7,7 @@ purged_games.json
 
 #Ignore Environment Files
 Environment/
+#Launch.bat
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

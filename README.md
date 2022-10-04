@@ -26,7 +26,7 @@
 This was made for me to be able to get a list of all my games on steam. Specifically to sort out the unplayed games. Then select a random unplayed game for me to play.
 
 ## Running the Python Script
-Windows
+### Windows
 - Initial Run
     - cd /your/folder
     - python3 -m venv env
@@ -36,7 +36,7 @@ Windows
 - Running After
     - cd /your/folder
     - call env/Scripts/activate.bat && python3 Random_Steam_Game_Picker.py
-Linux
+### Linux
 - Initial Run
     - cd /your/folder
     - python3 -m venv env
