@@ -1,9 +1,9 @@
+#!/usr/bin/env python3
 ##################################################################################################################################################################
 ### Importing Modules ###
 from datetime import datetime
 from distutils.command.config import config
 from genericpath import exists
-from msilib.schema import Directory
 from os import O_TEMPORARY, PathLike, system
 import os
 import pathlib
