@@ -2,16 +2,11 @@
 ##################################################################################################################################################################
 ### Importing Modules ###
 from datetime import datetime
-from distutils.command.config import config
-from genericpath import exists
-from os import O_TEMPORARY, PathLike, system
+from os import system
 import os
 import pathlib
-from sys import getprofile
-from typing import Text
 import requests
 import json
-from requests.models import requote_uri
 import random
 
 ##################################################################################################################################################################
@@ -34,9 +29,7 @@ Player_Stats = ""
 key = ""  # Your Steam Web API Key
 steamid = ""  # Your Steam User ID
 ### Directories ###
-directory_path = (
-    str(pathlib.Path().resolve()) + "\Steam_Files\\"
-)  # Base path to save to
+directory_path = str(pathlib.Path().resolve()) + "/Steam_Files/"  # Base path to save to
 directory_path_config = directory_path + "config.json"
 directory_path_games = directory_path + "purged_games.json"
 directory_path_stats = directory_path + "player_stats.txt"
@@ -59,7 +52,7 @@ def GetID(vanity_url, api_key):
 
 ##################################################################################################################################################################
 ### If config file doesn't exist, run through set up. If it does exist load it. Ask if you have the id or not. If don't use vanity to get id, if not just ask for id.
-def CreateInfo_Id(id):  # 1b
+def CreateInfo_Id():  # 1b
     system("cls")
     User_Input = input("Insert your steam id:\n")
     return User_Input
@@ -73,7 +66,7 @@ def CreateInfo_Vanity(api_key):  # 1a ###api key
     return vanity
 
 
-def CreateInfo_Start(config_info):  # 1
+def CreateInfo_Start():  # 1
     system("cls")
     info = {"key": "", "steamid": ""}  # New dictionary
     # Getting the api key
@@ -85,7 +78,7 @@ def CreateInfo_Start(config_info):  # 1
     Id_Input = input("Do You have the steam id? (1 or 2):\n")
     Input_Decision = int(Id_Input)
     if Input_Decision == 1:  # If they do have the id
-        id_number = CreateInfo_Id(id_number)
+        id_number = CreateInfo_Id()
     elif Input_Decision == 2:  # If they don't have the id
         id_number = CreateInfo_Vanity(api_key)
     else:
@@ -105,7 +98,7 @@ def CreateInfo_Start(config_info):  # 1
 
 
 # If the config file does exist then load it
-def LoadInfo(info):
+def LoadInfo():
     with open(directory_path_config) as inputfile:
         loaded_info = json.load(inputfile)  # Load JON from file
     return loaded_info  # Returning the games loaded from the file
@@ -227,31 +220,31 @@ def First_Choice(games):
 
 ##################################################################################################################################################################
 ### Check if directory exits ###
-if not exists(directory_path):
+if os.path.exists(directory_path) == False:  # Make the directory if it doesn't exist
     os.mkdir(directory_path)
 ### Checking if the config file exists ###
 # if it exists load it
-if exists(directory_path_config):  # load it if it exists
-    info = LoadInfo(info)
+if os.path.exists(directory_path_config):  # load it if it exists
+    info = LoadInfo()
 else:  # create it if it doesn't exist
-    info = CreateInfo_Start(info)
+    info = CreateInfo_Start()
 key = dict.get(info, "key")
 steamid = dict.get(info, "steamid")
 ##################################################################################################################################################################
-### Check if other files exist. If Not create them ###
-if not exists(directory_path_games):
+### Check if other files exist. If not create them ###
+if os.path.exists(directory_path_games) == False:
     new_file = open(directory_path_games, "x")
     new_file.close()
-if not exists(directory_path_purge):
+if os.path.exists(directory_path_purge) == False:
     new_file = open(directory_path_purge, "x")
     new_file.close()
-if not exists(directory_path_stats):
+if os.path.exists(directory_path_stats) == False:
     new_file = open(directory_path_stats, "x")
     new_file.close()
-if not exists(directory_path_unplayed_games):
+if os.path.exists(directory_path_unplayed_games) == False:
     new_file = open(directory_path_unplayed_games, "x")
     new_file.close()
-if not exists(directory_path_played_games):
+if os.path.exists(directory_path_played_games) == False:
     new_file = open(directory_path_played_games, "x")
     new_file.close()
 ##################################################################################################################################################################
@@ -272,7 +265,7 @@ def Save_games(played_games, unplayed_games):
 
 
 ##################################################################################################################################################################
-def Remove_Played_Games(games):
+def Remove_Played_Games():
     unplayed_games = {}  # New dictionary for unplayed games
     played_games = {}  # New dictionary for played games
     for x in Game_List:  # Checking every game in the game list
@@ -291,7 +284,7 @@ def Remove_Played_Games(games):
 
 ##################################################################################################################################################################
 ### Starting the Second Choice To Get Rid Of Unplayed Games ###
-def Second_Choice(games):
+def Second_Choice():
     system("cls")
     get_games = {}  # Dictionary to hold the games from the users choice
     User_Choice = input(
@@ -299,7 +292,7 @@ def Second_Choice(games):
     )
     User_Decision = int(User_Choice)
     if User_Decision == 1:
-        get_games = Remove_Played_Games(get_games)  # Removing played games
+        get_games = Remove_Played_Games()  # Removing played games
     elif User_Decision == 2:
         get_games = Game_List  # Passthrough all games
     else:
@@ -312,7 +305,7 @@ def Second_Choice(games):
 
 ##################################################################################################################################################################
 ### Starting to question removing played games ###
-Random_Game_List = Second_Choice(Random_Game_List)
+Random_Game_List = Second_Choice()
 ##################################################################################################################################################################
 ### Do they want to select a Random Game to Play ###
 def Third_Choice(game):
@@ -343,7 +336,7 @@ print(Random_Game)
 input("Press Enter to Continue")  # Wait until input until continuing
 ##################################################################################################################################################################
 ### Getting Game Stats ###
-def Get_Game_Stats(games):
+def Get_Game_Stats():
     ### Variables ####
     Total_Hours = 0
     Total_Games = 0
@@ -454,14 +447,14 @@ def Get_Game_Stats(games):
 
 ##################################################################################################################################################################
 ### Do they want a sumamry of their stats ###
-def Fourth_Choice(stats):
+def Fourth_Choice():
     system("cls")
     output = ""
     User_Choice = input("Do you want player stats? (1 or 2):\n")
     User_Decision = int(User_Choice)
     if User_Decision == 1:  # Get player stats
         print("test")
-        output = Get_Game_Stats(output)
+        output = Get_Game_Stats()
     elif User_Decision == 2:
         output = "No stats wanted"
     else:
@@ -474,7 +467,7 @@ def Fourth_Choice(stats):
 
 ##################################################################################################################################################################
 ### Asking about if they want Player Stats ###
-Player_Stats = Fourth_Choice(Player_Stats)
+Player_Stats = Fourth_Choice()
 system("cls")
 print(Player_Stats)
 input(
